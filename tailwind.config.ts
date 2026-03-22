@@ -5,11 +5,11 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./data/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        // SAPedia brand colours — single source of truth
         brand: {
           blue:     "#0070F2",
           "blue-d": "#0057C2",
@@ -18,14 +18,13 @@ const config: Config = {
           navy:     "#0B1829",
           navy2:    "#0F2746",
         },
-        // Semantic content colours
         content: {
-          concept:  "#EBF4FF", // 🟦
-          example:  "#EDFAF1", // 🟩
-          exam:     "#FFFBEA", // 🟨
-          mistake:  "#FEF2F2", // 🟥
-          jargon:   "#F3F0FF", // 🟪
-          support:  "#FFF8F0", // ☕
+          concept:  "#EBF4FF",
+          example:  "#EDFAF1",
+          exam:     "#FFFBEA",
+          mistake:  "#FEF2F2",
+          jargon:   "#F3F0FF",
+          support:  "#FFF8F0",
         },
       },
       fontFamily: {
