@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, use } from "react";
 import Link from "next/link";
 import COURSE_REGISTRY from "@/data/registry";
 import type { LessonWithUnit } from "@/types";
@@ -135,8 +135,9 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport }: { course
   );
 }
 
-export default function CoursePage({ params }: { params: { courseId: string } }) {
-  const course = COURSE_REGISTRY[params.courseId];
+export default function CoursePage({ params: paramsPromise }: { params: Promise<{ courseId: string }> }) {
+  const { courseId } = use(paramsPromise);
+  const course = COURSE_REGISTRY[courseId];
   const [activeId, setActiveId] = useState("");
   const [sideOpen, setSideOpen] = useState(true);
   const [modal, setModal] = useState(false);
