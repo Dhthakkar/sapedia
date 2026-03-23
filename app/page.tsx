@@ -130,7 +130,7 @@ export default function HomePage() {
             {[
               { icon:"👤", title:"Who built this?",      desc:"An SAP domain professional with 9 years of hands-on experience across ABAP development, data migration, and landscape transformation — working independently." },
               { icon:"📝", title:"What is this content?", desc:"All lessons, explanations, diagrams, and examples are independently created based on 9 years of hands-on SAP domain experience." },
-              { icon:"🏭", title:"The example company",   desc:"Akshar Industries Pvt. Ltd., Nirav Shah, Priya Desai, Arjun Kapoor — all completely fictional. Any resemblance to real entities is coincidental." },
+              
               { icon:"®️",  title:"Trademarks",            desc:"SAP®, RISE with SAP®, S/4HANA®, SAP BTP®, Signavio®, LeanIX® are registered trademarks of SAP SE. Used for identification only. Not affiliated with SAP SE." },
             ].map(c => (
               <div key={c.title} className="bg-white border border-[#E2E8F0] rounded-xl p-4">
