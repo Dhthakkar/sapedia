@@ -43,7 +43,7 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-wrap gap-2.5 justify-center animate-fade-up" style={{ animationDelay:"0.18s" }}>
-            {["🧠 Plain English, always","🏭 Real-world examples","🎯 Interactive diagrams","🆓 Completely free","📝 Practice questions included"].map(chip => (
+            {["🧠 Plain English, always","🏭 Real-world examples","🎯 Interactive diagrams","📝 Practice questions included"].map(chip => (
               <div key={chip} className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.11] rounded-full px-4 py-1.5">
                 <span className="text-xs text-[#CBD5E1] font-medium">{chip}</span>
               </div>
@@ -129,7 +129,7 @@ export default function HomePage() {
           <div className="grid gap-4" style={{ gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))" }}>
             {[
               { icon:"👤", title:"Who built this?",      desc:"An SAP domain professional with 9 years of hands-on experience across ABAP development, data migration, and landscape transformation — working independently." },
-              { icon:"📝", title:"What is this content?", desc:"All lessons, explanations, diagrams, and examples are independently created based on the author's professional knowledge. Not SAP's official training content." },
+              { icon:"📝", title:"What is this content?", desc:"All lessons, explanations, diagrams, and examples are independently created based on 9 years of hands-on SAP domain experience." },
               { icon:"🏭", title:"The example company",   desc:"Akshar Industries Pvt. Ltd., Nirav Shah, Priya Desai, Arjun Kapoor — all completely fictional. Any resemblance to real entities is coincidental." },
               { icon:"®️",  title:"Trademarks",            desc:"SAP®, RISE with SAP®, S/4HANA®, SAP BTP®, Signavio®, LeanIX® are registered trademarks of SAP SE. Used for identification only. Not affiliated with SAP SE." },
             ].map(c => (

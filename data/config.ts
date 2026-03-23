@@ -8,9 +8,9 @@ export const PLATFORM_CONFIG: PlatformConfig = {
   tagline:      "SAP. Explained Simply.",
   heroHeadline1:"Understand SAP.",
   heroHeadline2:"At Your Own Pace.",
-  heroSubline:  "Structured, plain-English breakdowns of SAP products, methodologies, and services — independently created by someone with 9 years of hands-on SAP domain experience. Not SAP's official content — something better: a practitioner's perspective with visuals, real examples, and practice questions.",
+  heroSubline:  "Structured, plain-English breakdowns of SAP products, methodologies, and services — built by someone with 9 years of hands-on SAP domain experience. Visual, interactive, and practitioner-led.",
   footerLine1:  "SAPedia is an independent educational platform created by an SAP domain professional · Not affiliated with, endorsed by, or sponsored by SAP SE",
-  footerLine2:  "All course content is independently created for educational purposes based on the author's professional experience and publicly available information about SAP products.",
+  footerLine2:  "All course content is independently created based on the author's professional experience.",
   footerLine3:  "SAP®, RISE with SAP®, S/4HANA®, SAP BTP®, SAP Signavio®, SAP LeanIX®, SAP Cloud ALM® are registered trademarks of SAP SE. Use of these names is for identification purposes only.",
 };
 
