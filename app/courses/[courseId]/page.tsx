@@ -399,10 +399,7 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
   useEffect(() => {
     if (!lesson) return;
     const allDone = lesson.topics.every(t => completedTopics[t.id]);
-    if (allDone) {
-      setLessonDone(courseId, lessonId, true);
-      window.dispatchEvent(new Event("storage-update"));
-    }
+    if (allDone) setLessonDone(courseId, lessonId, true);
   }, [completedTopics, lesson, courseId, lessonId]);
 
   if (!lesson) return (
@@ -456,13 +453,7 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport }: {
 }) {
   const [done, setDone] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    setDone(getCourseProgress(course.id));
-    // Re-read progress whenever localStorage changes (triggered by topic completion)
-    const handler = () => setDone(getCourseProgress(course.id));
-    window.addEventListener("storage-update", handler);
-    return () => window.removeEventListener("storage-update", handler);
-  }, [course.id]);
+  useEffect(() => { setDone(getCourseProgress(course.id)); }, [course.id]);
 
   const total = allLessons.length;
   const doneN = Object.values(done).filter(Boolean).length;
@@ -472,7 +463,6 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport }: {
     const next = !done[id];
     setDone(p => ({ ...p, [id]: next }));
     setLessonDone(course.id, id, next);
-    window.dispatchEvent(new Event("storage-update"));
   };
 
   return (
