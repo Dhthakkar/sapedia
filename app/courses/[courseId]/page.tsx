@@ -78,17 +78,13 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
 }) {
   const [selected, setSelected] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [qIdx, setQIdx] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Select one random question from the pool on mount
-  const question = useMemo(() => {
-    const idx = Math.floor(Math.random() * topic.questions.length);
-    return topic.questions[idx];
-  }, [topic.questions]);
-
-  const isMulti = question.type === "multi";
-  const requiredCount = isMulti ? (question.count || 1) : 1;
-  const correctAnswers = question.correct;
+  // Pick question only on client-side mount to avoid hydration mismatch
+  useEffect(() => {
+    setQIdx(Math.floor(Math.random() * topic.questions.length));
+  }, [topic.questions.length]);
 
   // Mark as visited when enters viewport
   useEffect(() => {
@@ -102,8 +98,13 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
     return () => obs.disconnect();
   }, [onVisit]);
 
+  const question = qIdx !== null ? topic.questions[qIdx] : null;
+
   const handleSelect = (idx: number) => {
-    if (submitted) return;
+    if (!question || submitted) return;
+    const isMulti = question.type === "multi";
+    const requiredCount = isMulti ? (question.count || 1) : 1;
+    const correctAnswers = question.correct;
 
     if (!isMulti) {
       const newSelected = [idx];
@@ -126,6 +127,12 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
       });
     }
   };
+
+  if (!question) return <div ref={ref} className="mb-24 h-64 bg-slate-50 animate-pulse rounded-3xl" />;
+
+  const isMulti = question.type === "multi";
+  const requiredCount = isMulti ? (question.count || 1) : 1;
+  const correctAnswers = question.correct;
 
   const isCorrect = submitted && 
                     selected.length === correctAnswers.length && 
@@ -204,9 +211,22 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
 
         {submitted && (
           <div className={`px-5 py-4 border-t text-[13px] leading-relaxed font-medium ${isCorrect ? "bg-emerald-50 text-emerald-800 border-emerald-100" : "bg-red-50 text-red-800 border-red-100"}`}>
-            <div className="flex gap-2">
-              <span className="text-lg leading-none">{isCorrect ? "✅" : "❌"}</span>
-              <p>{question.why}</p>
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2">
+                <span className="text-lg leading-none">{isCorrect ? "✅" : "❌"}</span>
+                <p>{question.why}</p>
+              </div>
+              {!isCorrect && (
+                <button
+                  onClick={() => {
+                    setSubmitted(false);
+                    setSelected([]);
+                  }}
+                  className="w-fit px-4 py-1.5 bg-red-600 text-white rounded-lg text-[11px] font-black uppercase tracking-wider hover:bg-red-700 transition-colors"
+                >
+                  Try Again
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -221,10 +241,24 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
 function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string }) {
   const lessons = useMemo(() => getLessons(), []);
   const lesson = lessons[lessonId];
-
+  
   const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>({});
   const [visitedTopics, setVisitedTopics]     = useState<Record<string, boolean>>({});
   const endRef = useRef<HTMLDivElement>(null);
+
+  // Sync state with localStorage on mount and when lessonId changes
+  useEffect(() => {
+    if (!lesson) return;
+    const progress = getCourseProgress(courseId);
+    // Note: completedTopics is local to this lesson's view, 
+    // but the actual lesson completion is saved globally.
+    // For individual topic completion, we don't persist them yet, 
+    // but visited topics ARE persisted.
+    const visited = getVisitedTopics(courseId);
+    const visitedMap: Record<string, boolean> = {};
+    visited.forEach(id => { visitedMap[id] = true; });
+    setVisitedTopics(visitedMap);
+  }, [courseId, lessonId, lesson]);
 
   const markDone = useCallback((id: string) => {
     setCompletedTopics(p => {
@@ -308,20 +342,15 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
       <div className="mt-16 pt-10 border-t-2 border-slate-100 text-center relative">
         {doneCount >= totalCount ? (
           <div className="animate-in fade-in zoom-in duration-500">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full mb-6 shadow-lg shadow-emerald-50">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full mb-6 shadow-lg shadow-emerald-50 border-4 border-white">
               <span className="text-3xl">🎉</span>
             </div>
             <h3 className="font-display text-2xl font-black text-slate-900 mb-2">Lesson Mastered!</h3>
-            <p className="text-slate-500 font-medium mb-8">You've successfully completed all topics and checkpoints.</p>
-            <button
-              onClick={finishLesson}
-              className="px-12 py-4 bg-emerald-600 text-white rounded-2xl font-black transition-all shadow-xl shadow-emerald-100 hover:-translate-y-1 active:scale-95"
-            >
-              Mark Lesson as Done ✓
-            </button>
+            <p className="text-slate-500 font-medium">You've successfully completed all topics and checkpoints.</p>
+            <p className="text-[11px] font-black text-emerald-600 uppercase tracking-[2px] mt-4">Marked as Done in Sidebar ✓</p>
           </div>
         ) : (
-          <div>
+          <div className="opacity-50">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 text-slate-400 rounded-full mb-4">
               <span className="text-2xl">⏳</span>
             </div>
