@@ -17,15 +17,24 @@ export const metadata: Metadata = {
   openGraph: {
     type:        "website",
     locale:      "en_IN",
-    url:         "https://sapedia.in",   // ← Update when domain is ready
+    url:         "https://sapedia.vercel.app",
     siteName:    PLATFORM_CONFIG.name,
     title:       `${PLATFORM_CONFIG.name} — ${PLATFORM_CONFIG.tagline}`,
     description: PLATFORM_CONFIG.heroSubline,
+    images: [
+      {
+        url: "https://sapedia.vercel.app/og-image.png", // ← Ensure this file exists in /public
+        width: 1200,
+        height: 630,
+        alt: "SAPedia — SAP Explained Simply",
+      },
+    ],
   },
   twitter: {
     card:        "summary_large_image",
     title:       `${PLATFORM_CONFIG.name} — ${PLATFORM_CONFIG.tagline}`,
     description: PLATFORM_CONFIG.heroSubline,
+    images: ["https://sapedia.vercel.app/og-image.png"],
   },
   robots: {
     index:  true,
