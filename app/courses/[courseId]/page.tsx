@@ -13,11 +13,12 @@ import { u1l1Content, u1l2Content, u1l3Content } from "@/data/courses/rise-with-
 import { u2l1Content, u2l2Content, u2l3Content, u2l4Content, u2l5Content } from "@/data/courses/rise-with-sap/u2_content";
 import { u3l1Content } from "@/data/courses/rise-with-sap/u3_content";
 import {
-  StatsRow, EcosystemDiagram, Triangle, PhaseTimeline,
+  StatsRow, Triangle, PhaseTimeline,
   DimensionWheel, CharacteristicsGrid, BTPStack, BeforeAfter,
   RISEvsGROW, PathwaysViz, ComponentPillars, EnhancementCards,
   BenefitsGrid,
 } from "@/components/visuals/index";
+import EcosystemDiagram from "@/components/visuals/EcosystemDiagram";
 import ITPillars from "@/components/visuals/ITPillars";
 import ToolsTable from "@/components/visuals/ToolsTable";
 import CleanStateVisual from "@/components/visuals/CleanStateVisual";
