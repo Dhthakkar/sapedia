@@ -69,11 +69,23 @@ function getLessons(): Record<string, LessonData> {
 // ─────────────────────────────────────────────────────────────
 // SINGLE TOPIC — minimal, no section labels
 // ─────────────────────────────────────────────────────────────
-function TopicCard({ topic, num, isComplete, onComplete }: {
-  topic: Topic; num: number; isComplete: boolean; onComplete: () => void;
+function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
+  topic: Topic; num: number; isComplete: boolean; onComplete: () => void; onVisit: () => void;
 }) {
   const [answered, setAnswered] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Mark as visited when enters viewport
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onVisit(); },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [onVisit]);
 
   const handleAnswer = (idx: number) => {
     setAnswered(idx);
@@ -150,9 +162,17 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
   const lessons = useMemo(() => getLessons(), []);
   const lesson = lessons[lessonId];
   const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>({});
+  const [visitedTopics, setVisitedTopics]     = useState<Record<string, boolean>>({});
 
   const markDone = (id: string) => {
     setCompletedTopics(p => {
+      if (p[id]) return p;
+      return { ...p, [id]: true };
+    });
+  };
+
+  const markVisited = (id: string) => {
+    setVisitedTopics(p => {
       if (p[id]) return p;
       return { ...p, [id]: true };
     });
@@ -172,6 +192,7 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
   );
 
   const doneCount = lesson.topics.filter(t => completedTopics[t.id]).length;
+  const visitCount = lesson.topics.filter(t => visitedTopics[t.id]).length;
   const totalCount = lesson.topics.length;
 
   return (
@@ -179,13 +200,13 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
       {/* Lesson intro — one line */}
       <p className="text-[15px] text-[#475569] mb-8 leading-relaxed">{lesson.intro}</p>
 
-      {/* Progress within lesson */}
+      {/* Progress within lesson — based on visits */}
       <div className="flex items-center gap-3 mb-8 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
         <div className="flex-1 h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
           <div className="h-full bg-[#0070F2] rounded-full transition-all duration-500"
-            style={{ width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%` }} />
+            style={{ width: `${totalCount > 0 ? (visitCount / totalCount) * 100 : 0}%` }} />
         </div>
-        <span className="text-xs font-bold text-[#64748B] flex-shrink-0">{doneCount}/{totalCount} topics</span>
+        <span className="text-xs font-bold text-[#64748B] flex-shrink-0">{visitCount}/{totalCount} explored</span>
       </div>
 
       {/* Topics */}
@@ -196,6 +217,7 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
           num={i + 1}
           isComplete={!!completedTopics[topic.id]}
           onComplete={() => markDone(topic.id)}
+          onVisit={() => markVisited(topic.id)}
         />
       ))}
 

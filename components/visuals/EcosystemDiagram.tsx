@@ -16,8 +16,8 @@ export default function EcosystemDiagram() {
   const activeItem = items.find(i => i.id === active);
 
   return (
-    <div className="w-full flex flex-col gap-10 mt-4">
-      <div className="w-full">
+    <div className="w-full flex flex-col gap-8 mt-4">
+      <div className="w-full max-w-[480px] mx-auto px-4">
         <svg viewBox="0 0 350 350" className="w-full h-auto block drop-shadow-sm">
         {[...items].reverse().map(it => (
           <circle key={it.id} cx={CX} cy={CY} r={it.r}
