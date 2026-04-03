@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, use } from "react";
+import { useState, useEffect, useRef, useMemo, use, useCallback } from "react";
 import Link from "next/link";
 import COURSE_REGISTRY from "@/data/registry";
 import type { LessonWithUnit } from "@/types";
@@ -164,21 +164,24 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
   const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>({});
   const [visitedTopics, setVisitedTopics]     = useState<Record<string, boolean>>({});
 
-  const markDone = (id: string) => {
+  const markDone = useCallback((id: string) => {
     setCompletedTopics(p => {
       if (p[id]) return p;
       return { ...p, [id]: true };
     });
-  };
+  }, []);
 
-  const markVisited = (id: string) => {
+  const markVisited = useCallback((id: string) => {
     setVisitedTopics(p => {
       if (p[id]) return p;
       setTopicVisited(courseId, id);
-      window.dispatchEvent(new Event("storage-update"));
+      // Defer event to avoid updating Sidebar during LessonView render
+      setTimeout(() => {
+        window.dispatchEvent(new Event("storage-update"));
+      }, 0);
       return { ...p, [id]: true };
     });
-  };
+  }, [courseId]);
 
   const finishLesson = () => {
     setLessonDone(courseId, lessonId, true);
