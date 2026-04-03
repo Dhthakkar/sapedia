@@ -306,13 +306,25 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport, onExam }: 
 
       {/* Lesson list */}
       <div className="flex-1 overflow-y-auto py-2">
-        {course.units.map(unit => (
-          <div key={unit.id} className="mb-1">
-            <div className="px-4 py-2 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: unit.color }} />
-              <span className="text-[10px] font-black text-[#94A3B8] uppercase tracking-[0.7px]">{unit.title}</span>
-            </div>
-            {unit.lessons.map(lesson => {
+        {course.units.map(unit => {
+          const unitLessonsDone = unit.lessons.every(l => !!done[l.id]);
+          return (
+            <div key={unit.id} className="mb-1">
+              <div className="px-4 py-2 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" 
+                    style={{ background: unitLessonsDone ? "#059669" : unit.color }} />
+                  <span className={`text-[10px] font-black uppercase tracking-[0.7px] truncate ${unitLessonsDone ? "text-[#059669]" : "text-[#94A3B8]"}`}>
+                    {unit.title}
+                  </span>
+                </div>
+                {unitLessonsDone && (
+                  <span className="text-[9px] font-black text-[#059669] bg-[#EDFAF1] px-1.5 py-0.5 rounded flex-shrink-0">
+                    DONE ✓
+                  </span>
+                )}
+              </div>
+              {unit.lessons.map(lesson => {
               const isA   = activeId === lesson.id;
               const isDone = !!done[lesson.id];
               return (
