@@ -353,7 +353,7 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport, onExam }: 
               );
             })}
           </div>
-        ))}
+        )})}
       </div>
 
       {/* Support */}
