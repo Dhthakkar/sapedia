@@ -2,11 +2,11 @@
 import { useState } from "react";
 
 const items = [
-  { id:"erp",  label:"Cloud ERP",          sub:"S/4HANA",        color:"#0070F2", r:40,  desc:"Core operations — Finance, Procurement, Manufacturing, Sales." },
-  { id:"btp",  label:"SAP BTP",            sub:"Build & Extend", color:"#7C3AED", r:75,  desc:"Build custom apps and integrations on top of ERP without touching the core." },
-  { id:"data", label:"Business Data Cloud",sub:"Analytics",      color:"#0891B2", r:108, desc:"Data management, analytics, and Business Intelligence across the Suite." },
-  { id:"ai",   label:"Business AI",        sub:"Intelligence",   color:"#059669", r:140, desc:"AI capabilities across all products — Joule, predictive analytics, automation." },
-  { id:"lob",  label:"LoB Solutions",      sub:"HR, CX, Spend",  color:"#D97706", r:170, desc:"SuccessFactors (HR), SAP CX, Ariba (Spend) — specialised apps per business function." },
+  { id:"erp",  label:"Cloud ERP",          sub:"S/4HANA",        color:"#0070F2", r:35,  desc:"Core operations — Finance, Procurement, Manufacturing, Sales." },
+  { id:"btp",  label:"SAP BTP",            sub:"Build & Extend", color:"#7C3AED", r:65,  desc:"Build custom apps and integrations on top of ERP without touching the core." },
+  { id:"data", label:"Business Data Cloud",sub:"Analytics",      color:"#0891B2", r:95, desc:"Data management, analytics, and Business Intelligence across the Suite." },
+  { id:"ai",   label:"Business AI",        sub:"Intelligence",   color:"#059669", r:125, desc:"AI capabilities across all products — Joule, predictive analytics, automation." },
+  { id:"lob",  label:"LoB Solutions",      sub:"HR, CX, Spend",  color:"#D97706", r:155, desc:"SuccessFactors (HR), SAP CX, Ariba (Spend) — specialised apps per business function." },
 ];
 
 const CX = 175, CY = 175;
@@ -16,9 +16,9 @@ export default function EcosystemDiagram() {
   const activeItem = items.find(i => i.id === active);
 
   return (
-    <div className="w-full flex flex-col gap-6 pb-4">
-      <div className="w-full relative">
-        <svg viewBox="0 0 350 355" className="w-full h-auto block">
+    <div className="w-full flex flex-col gap-10 mt-4">
+      <div className="w-full">
+        <svg viewBox="0 0 350 350" className="w-full h-auto block drop-shadow-sm">
         {[...items].reverse().map(it => (
           <circle key={it.id} cx={CX} cy={CY} r={it.r}
             fill={`${it.color}${active === it.id ? "18" : "08"}`}
@@ -32,19 +32,18 @@ export default function EcosystemDiagram() {
         <text x={CX} y={CY+9} textAnchor="middle" fontSize={8}  fontWeight={500} fill="#64748B">S/4HANA</text>
         {items.filter(i => i.id !== "erp").map((it, idx) => {
           const angle = (idx / 4) * Math.PI * 2 - Math.PI / 2 + 0.3;
-          const x = CX + (it.r - 16) * Math.cos(angle);
-          const y = CY + (it.r - 16) * Math.sin(angle);
+          const x = CX + (it.r - 12) * Math.cos(angle);
+          const y = CY + (it.r - 12) * Math.sin(angle);
           return (
             <text key={it.id} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-              fontSize={7.5} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
+              fontSize={7} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
               style={{ pointerEvents:"none" }}>
               {it.label}
             </text>
           );
         })}
       </svg>
-    </div>
-    <div className="min-h-[80px]">
+      <div className="min-h-[80px]">
         {activeItem ? (
           <div className="rounded-xl p-3 border-2" style={{ background:`${activeItem.color}10`, borderColor:`${activeItem.color}30` }}>
             <p className="text-sm font-black mb-1" style={{ color:activeItem.color }}>{activeItem.label} — {activeItem.sub}</p>
