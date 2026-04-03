@@ -19,9 +19,9 @@ export const PLATFORM_CONFIG: PlatformConfig = {
 // ═══════════════════════════════════════════════════════
 export const CREATOR_SUPPORT: CreatorSupportConfig = {
   paypal:         "YOUR_PAYPAL_LINK",
-  upi:            "YOUR_UPI_ID",
+  upi:            "8401930062@yescred",
   buymeacoffee:   "YOUR_BMC_LINK",
-  bankTransfer:   "YOUR_BANK_DETAILS_LINK",
+  bankTransfer:   "HDFC Bank | Thakkar Dhruvkumar Himmatbhai | A/c: 50100211114567 | IFSC: HDFC0000486",
   supportHeading: "9 Years in SAP, Distilled Into Free Learning",
   supportMessage: "I've spent years working in the SAP domain and even more time distilling that experience into structured, easy-to-follow learning. If this helped you understand SAP better, a small appreciation means a lot — and motivates me to keep building more.",
 };
