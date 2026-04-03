@@ -18,11 +18,12 @@ export default function EcosystemDiagram() {
   return (
     <div className="w-full flex flex-col items-center gap-6">
       {/* 
-          Fixed-Size Container for the Diagram:
-          This prevents the circles from growing based on screen width.
-          The diagram will be exactly 300x300px.
+          Responsive Container for the Diagram:
+          - Fixed aspect ratio to prevent scaling issues
+          - Responsive sizing based on viewport
+          - Prevents text overlap at different screen sizes
       */}
-      <div className="w-[300px] h-[300px] relative shrink-0">
+      <div className="w-full max-w-[300px] aspect-square relative shrink-0 min-h-[250px] sm:min-h-[300px]">
         <svg viewBox="0 0 300 300" className="w-full h-full block overflow-visible">
           {[...items].reverse().map(it => (
             <circle key={it.id} cx={CX} cy={CY} r={it.r}
@@ -34,9 +35,11 @@ export default function EcosystemDiagram() {
             />
           ))}
           
+          {/* Center text - Cloud ERP */}
           <text x={CX} y={CY-5} textAnchor="middle" fontSize={9} fontWeight={900} fill="#0070F2" fontFamily="Sora,sans-serif">Cloud ERP</text>
           <text x={CX} y={CY+8} textAnchor="middle" fontSize={7}  fontWeight={600} fill="#64748B">S/4HANA</text>
           
+          {/* Ring labels - positioned to avoid overlap */}
           {items.filter(i => i.id !== "erp").map((it, idx) => {
             const angle = (idx / 4) * Math.PI * 2 - Math.PI / 2 + 0.4;
             const x = CX + (it.r - 8) * Math.cos(angle);

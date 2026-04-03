@@ -108,21 +108,28 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
     const correctAnswers = question.correct;
 
     if (!isMulti) {
+      // Single choice: submit immediately on selection
       const newSelected = [idx];
       setSelected(newSelected);
       setSubmitted(true);
-      if (idx === correctAnswers[0]) onComplete();
+      if (idx === correctAnswers[0]) {
+        onComplete();
+      }
     } else {
+      // Multi choice: strictly wait for correct count before submission
       setSelected(prev => {
         if (prev.includes(idx)) return prev.filter(i => i !== idx);
         if (prev.length >= requiredCount) return prev;
         
         const next = [...prev, idx];
         if (next.length === requiredCount) {
+          // Only submit when exactly the required count is selected
           setSubmitted(true);
           const isAllCorrect = next.length === correctAnswers.length && 
                                next.every(val => correctAnswers.includes(val));
-          if (isAllCorrect) onComplete();
+          if (isAllCorrect) {
+            onComplete();
+          }
         }
         return next;
       });
@@ -220,8 +227,14 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
               {!isCorrect && (
                 <button
                   onClick={() => {
+                    // Complete state reset for Try Again
                     setSubmitted(false);
                     setSelected([]);
+                    // Force re-render by resetting question index
+                    setQIdx(null);
+                    setTimeout(() => {
+                      setQIdx(Math.floor(Math.random() * topic.questions.length));
+                    }, 100);
                   }}
                   className="w-fit px-4 py-1.5 bg-red-600 text-white rounded-lg text-[11px] font-black uppercase tracking-wider hover:bg-red-700 transition-colors"
                 >
@@ -284,21 +297,25 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
     window.dispatchEvent(new Event("storage-update"));
   }, [courseId, lessonId]);
 
-  // Auto-finish when end of page is reached
+  // Auto-finish when end of page is reached AND all topics are completed correctly
   useEffect(() => {
     const el = endRef.current;
     if (!el || !lesson) return;
     const obs = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        const allDone = lesson.topics.every(t => completedTopics[t.id]);
-        if (allDone) {
+        // Ensure ALL topics are completed correctly before marking lesson as done
+        const allCorrect = lesson.topics.every(t => completedTopics[t.id]);
+        const allVisited = lesson.topics.every(t => visitedTopics[t.id]);
+        
+        // Only finish lesson if all topics are correct AND all have been visited
+        if (allCorrect && allVisited) {
           finishLesson();
         }
       }
     }, { threshold: 0.1 });
     obs.observe(el);
     return () => obs.disconnect();
-  }, [completedTopics, lesson, finishLesson]);
+  }, [completedTopics, visitedTopics, lesson, finishLesson]);
 
   if (!lesson) return (
     <div className="rounded-2xl border border-[#BFDBFE] bg-[#EBF4FF] p-10 text-center">
