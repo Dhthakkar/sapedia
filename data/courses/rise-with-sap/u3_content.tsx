@@ -38,8 +38,9 @@ export const u3l1Content = {
       insight: "The RISE with SAP Methodology Dashboard (also known as the Clean Core Dashboard) is the 'go-to' place for customers to view their adherence to Clean Core principles. It's not a separate website — it is accessed directly through **SAP Cloud ALM**.\n\nAt Akshar Industries, Nirav Shah (IT Head) checks this dashboard once a week. It gives him an immediate, data-driven view of whether their processes, extensions, and integrations are actually 'Clean' or if technical debt is starting to creep in.",
       question: {
         q: "Where is the RISE with SAP Methodology Dashboard accessed?",
+        type: "single",
         options: ["Through a public URL", "Inside the SAP Support Portal", "Through SAP Cloud ALM", "Via the SAP Ariba network"],
-        correct: 2,
+        correct: [2],
         why: "The dashboard is integrated into and accessed through SAP Cloud ALM."
       }
     },
@@ -64,8 +65,9 @@ export const u3l1Content = {
       insight: "The dashboard provides three hierarchical capabilities. First, you **Access** a high-level overview. Then, you **Analyze** specific insights (like why a health score dropped). Finally, you **Manage** extensibility by identifying specific code deviations that could break future upgrades.\n\nPriya Desai (PM) at Akshar uses the 'Manage' view to look at their ABAP extensions. If the dashboard flags a customization as 'unclean', she can assign a task to the developers to fix it before it becomes a problem during the next quarterly update.",
       question: {
         q: "Which capability of the dashboard helps identify deviations from SAP's recommendations for system extensibility?",
+        type: "single",
         options: ["Access", "Analyze", "Manage", "Archive"],
-        correct: 2,
+        correct: [2],
         why: "The 'Manage' capability is specifically for identifying deviations and preparing for future upgrades."
       }
     },
@@ -80,8 +82,9 @@ export const u3l1Content = {
       insight: "While the 'System View' focuses on Clean Core adherence, the **Operations View** delivers daily insights into the technical health of your productive systems. It tracks KPIs like performance, connectivity, and background processing exceptions.\n\nThe dashboard provides 30 days of historical data, allowing the team at Akshar Industries to see if a system slowdown was a one-time event or a growing trend that needs attention from the Basis team.",
       question: {
         q: "How many days of historical data does the Operations View dashboard provide?",
+        type: "single",
         options: ["7 days", "14 days", "30 days", "365 days"],
-        correct: 2,
+        correct: [2],
         why: "The dashboard offers daily insights and includes up to 30 days of historical data."
       }
     },
@@ -92,8 +95,9 @@ export const u3l1Content = {
       insight: "The dashboard doesn't just look at the Production system. It includes insights for all S/4HANA systems: Development, Test, and Production. This is critical for the 'Clean Core' philosophy.\n\nAkshar Industries' policy is that no code can move from the Test system to Production if it has a 'Dirty' flag on the dashboard. By catching non-compliant code early in the Development system, they ensure their Production environment remains agile and ready for innovation.",
       question: {
         q: "Why does the dashboard include insights for Development and Test systems?",
+        type: "single",
         options: ["To increase the license cost", "To identify non-compliant code before it reaches Production", "To allow developers to play games", "It only includes Production systems"],
-        correct: 1,
+        correct: [1],
         why: "Insights across all systems help identify non-compliant code early and prevent it from moving into production."
       }
     },
@@ -104,8 +108,9 @@ export const u3l1Content = {
       insight: "A key feature of the RISE Methodology Dashboard is that its metrics, thresholds, and evaluation algorithms are **shared across all RISE with SAP customers**. This ensures a consistent, homogeneous calculation of compliance.\n\nWhen Akshar Industries sees a health score of 95%, they know it's based on the same rigorous SAP standards as every other global enterprise. This standardized benchmark gives the leadership team confidence that their transformation is truly meeting industry best practices.",
       question: {
         q: "Why are the metrics and evaluation algorithms shared across all RISE with SAP customers?",
+        type: "single",
         options: ["To make the dashboard look more complex", "To ensure consistent compliance calculation across all customers", "To share private customer data", "To reduce the amount of available data"],
-        correct: 1,
+        correct: [1],
         why: "Shared metrics and algorithms ensure a homogeneous and consistent compliance calculation for everyone."
       }
     }

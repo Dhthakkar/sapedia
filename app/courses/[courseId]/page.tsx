@@ -38,8 +38,10 @@ interface Topic {
   insight: string;
   question: {
     q: string;
+    type?: string; // Relaxed for inferred string types
+    count?: number;
     options: string[];
-    correct: number;
+    correct: number[];
     why: string;
   };
 }
@@ -67,13 +69,20 @@ function getLessons(): Record<string, LessonData> {
 }
 
 // ─────────────────────────────────────────────────────────────
-// SINGLE TOPIC — minimal, no section labels
+// SINGLE TOPIC — robust multi-select and validation logic
 // ─────────────────────────────────────────────────────────────
 function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
   topic: Topic; num: number; isComplete: boolean; onComplete: () => void; onVisit: () => void;
 }) {
-  const [answered, setAnswered] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [submitted, setSubmitted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const isMulti = topic.question.type === "multi";
+  const requiredCount = isMulti ? (topic.question.count || 1) : 1;
+  const correctAnswers = Array.isArray(topic.question.correct) 
+    ? topic.question.correct 
+    : [topic.question.correct];
 
   // Mark as visited when enters viewport
   useEffect(() => {
@@ -87,67 +96,112 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
     return () => obs.disconnect();
   }, [onVisit]);
 
-  const handleAnswer = (idx: number) => {
-    setAnswered(idx);
-    if (idx === topic.question.correct) {
-      onComplete();
+  const handleSelect = (idx: number) => {
+    if (submitted) return;
+
+    if (!isMulti) {
+      const newSelected = [idx];
+      setSelected(newSelected);
+      setSubmitted(true);
+      if (idx === correctAnswers[0]) onComplete();
+    } else {
+      setSelected(prev => {
+        if (prev.includes(idx)) return prev.filter(i => i !== idx);
+        if (prev.length >= requiredCount) return prev;
+        
+        const next = [...prev, idx];
+        if (next.length === requiredCount) {
+          setSubmitted(true);
+          const isAllCorrect = next.length === correctAnswers.length && 
+                               next.every(val => correctAnswers.includes(val));
+          if (isAllCorrect) onComplete();
+        }
+        return next;
+      });
     }
   };
 
-  const correct = answered === topic.question.correct;
+  const isCorrect = submitted && 
+                    selected.length === correctAnswers.length && 
+                    selected.every(val => correctAnswers.includes(val));
 
   return (
-    <div ref={ref} id={topic.id} className="mb-16">
+    <div ref={ref} id={topic.id} className="mb-24 scroll-mt-24">
       {/* Topic number + title */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-black flex-shrink-0 transition-all duration-300 ${isComplete ? "bg-[#059669] text-white" : "bg-[#EBF4FF] text-[#0070F2]"}`}>
+      <div className="flex items-center gap-3 mb-6">
+        <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-black flex-shrink-0 transition-all duration-300 ${isComplete ? "bg-[#059669] text-white shadow-lg shadow-emerald-100" : "bg-[#EBF4FF] text-[#0070F2]"}`}>
           {isComplete ? "✓" : num}
         </div>
-        <h3 className="font-display text-[clamp(15px,2vw,19px)] font-black text-[#0F172A]">{topic.title}</h3>
+        <h3 className="font-display text-[clamp(16px,2.5vw,20px)] font-black text-[#0F172A]">{topic.title}</h3>
       </div>
 
-      {/* Visual — full width, clean */}
-      <div className="mb-8 w-full">
+      {/* Visual Container — Forced aspect ratio and separation */}
+      <div className="mb-10 w-full bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-visible p-4 md:p-8">
         {topic.visual()}
       </div>
 
-      {/* Insight — teacher voice, no label, no box colour */}
-      <div className="mb-6">
+      {/* Insight */}
+      <div className="mb-8 px-2">
         {topic.insight.split('\n\n').map((para, i) => (
-          <p key={i} className={`text-[14.5px] text-[#334155] leading-[1.85] ${i > 0 ? "mt-4" : ""}`}>
+          <p key={i} className={`text-[15px] text-[#334155] leading-[1.8] ${i > 0 ? "mt-4" : ""}`}>
             {para}
           </p>
         ))}
       </div>
 
-      {/* Checkpoint question — always visible, no toggle */}
-      <div className="border border-[#E2E8F0] rounded-2xl overflow-hidden">
-        <div className="px-4 py-3 bg-[#F8FAFC] border-b border-[#E2E8F0]">
-          <p className="text-xs font-bold text-[#64748B]">Quick check — {topic.question.q}</p>
+      {/* Checkpoint question */}
+      <div className="border-2 border-slate-100 rounded-[24px] overflow-hidden bg-white shadow-sm transition-all hover:shadow-md">
+        <div className="px-5 py-4 bg-slate-50/50 border-b border-slate-100 flex justify-between items-center">
+          <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
+            Quick check {isMulti ? `(Select ${requiredCount})` : ""}
+          </p>
+          {submitted && (
+            <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${isCorrect ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+              {isCorrect ? "Correct" : "Incorrect"}
+            </span>
+          )}
         </div>
-        <div className="p-3 flex flex-col gap-2">
+        
+        <div className="p-5 flex flex-col gap-3">
+          <p className="text-[15px] font-bold text-[#0F172A] mb-2">{topic.question.q}</p>
           {topic.question.options.map((opt, i) => {
-            const isSelected = answered === i;
-            const isCorrect = i === topic.question.correct;
-            let bg = "#fff", border = "#E2E8F0", color = "#334155";
-            if (answered !== null) {
-              if (isCorrect) { bg = "#EDFAF1"; border = "#6EE7B7"; color = "#065F46"; }
-              else if (isSelected) { bg = "#FEF2F2"; border = "#FECACA"; color = "#991B1B"; }
+            const isSelected = selected.includes(i);
+            const isCorrectOption = correctAnswers.includes(i);
+            
+            let bg = "#fff", border = "#F1F5F9", color = "#475569";
+            
+            if (submitted) {
+              if (isCorrectOption) {
+                bg = "#F0FDF4"; border = "#4ADE80"; color = "#166534";
+              } else if (isSelected) {
+                bg = "#FEF2F2"; border = "#FCA5A5"; color = "#991B1B";
+              }
             } else if (isSelected) {
-              bg = "#EBF4FF"; border = "#0070F2"; color = "#0057C2";
+              bg = "#EFF6FF"; border = "#3B82F6"; color = "#1E40AF";
             }
+
             return (
-              <button key={i} onClick={() => { if (answered === null) { setAnswered(i); if (i === topic.question.correct) onComplete(); } }}
-                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all"
-                style={{ background: bg, border: `1.5px solid ${border}`, color, cursor: answered !== null ? "default" : "pointer" }}>
+              <button 
+                key={i} 
+                onClick={() => handleSelect(i)}
+                className="w-full text-left px-4 py-3.5 rounded-xl text-[14px] font-semibold transition-all flex items-center gap-3"
+                style={{ background: bg, border: `2px solid ${border}`, color }}
+              >
+                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isSelected ? "bg-current border-current text-white" : "border-slate-200"}`}>
+                  {isSelected && <span className="text-[10px]">✓</span>}
+                </div>
                 {opt}
               </button>
             );
           })}
         </div>
-        {answered !== null && (
-          <div className={`px-4 py-3 border-t text-xs leading-relaxed ${correct ? "bg-[#EDFAF1] border-[#6EE7B7] text-[#065F46]" : "bg-[#FEF2F2] border-[#FECACA] text-[#991B1B]"}`}>
-            {correct ? "✓ " : "✗ "}{topic.question.why}
+
+        {submitted && (
+          <div className={`px-5 py-4 border-t text-[13px] leading-relaxed font-medium ${isCorrect ? "bg-emerald-50 text-emerald-800 border-emerald-100" : "bg-red-50 text-red-800 border-red-100"}`}>
+            <div className="flex gap-2">
+              <span className="text-lg leading-none">{isCorrect ? "✅" : "❌"}</span>
+              <p>{topic.question.why}</p>
+            </div>
           </div>
         )}
       </div>
@@ -160,7 +214,15 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
 // ─────────────────────────────────────────────────────────────
 function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string }) {
   const lessons = useMemo(() => getLessons(), []);
-  const lesson = lessons[lessonId];
+  const rawLesson = lessons[lessonId];
+  
+  // Randomize topics on load
+  const lesson = useMemo(() => {
+    if (!rawLesson) return null;
+    const shuffled = [...rawLesson.topics].sort(() => Math.random() - 0.5);
+    return { ...rawLesson, topics: shuffled };
+  }, [rawLesson]);
+
   const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>({});
   const [visitedTopics, setVisitedTopics]     = useState<Record<string, boolean>>({});
   const endRef = useRef<HTMLDivElement>(null);
@@ -195,7 +257,9 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
     const obs = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         const allDone = lesson.topics.every(t => completedTopics[t.id]);
-        if (allDone) finishLesson();
+        if (allDone) {
+          finishLesson();
+        }
       }
     }, { threshold: 0.1 });
     obs.observe(el);
@@ -213,6 +277,7 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
   const doneCount = lesson.topics.filter(t => completedTopics[t.id]).length;
   const visitCount = lesson.topics.filter(t => visitedTopics[t.id]).length;
   const totalCount = lesson.topics.length;
+  const isLessonFinished = lesson.topics.every(t => completedTopics[t.id]) && visitCount === totalCount;
 
   return (
     <div>
@@ -240,28 +305,38 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
         />
       ))}
 
-      {/* Finish Lesson Button */}
-      <div className="mt-12 pt-8 border-t border-[#E2E8F0] text-center">
-        <button
-          onClick={finishLesson}
-          disabled={doneCount < totalCount}
-          className={`px-10 py-4 rounded-2xl font-black transition-all shadow-xl ${
-            doneCount < totalCount
-              ? "bg-[#F1F5F9] text-[#94A3B8] cursor-not-allowed"
-              : "bg-[#0070F2] text-white hover:-translate-y-1 shadow-blue-200"
-          }`}
-        >
-          {doneCount < totalCount ? `Complete all ${totalCount} topics to finish` : "Finish Lesson ✓"}
-        </button>
-        {doneCount >= totalCount && (
-          <p className="mt-4 text-xs font-bold text-[#059669] animate-bounce">
-            Great work! You've mastered this lesson.
-          </p>
+      {/* Completion Section */}
+      <div className="mt-16 pt-10 border-t-2 border-slate-100 text-center relative">
+        {doneCount >= totalCount ? (
+          <div className="animate-in fade-in zoom-in duration-500">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full mb-6 shadow-lg shadow-emerald-50">
+              <span className="text-3xl">🎉</span>
+            </div>
+            <h3 className="font-display text-2xl font-black text-slate-900 mb-2">Lesson Mastered!</h3>
+            <p className="text-slate-500 font-medium mb-8">You've successfully completed all topics and checkpoints.</p>
+            <button
+              onClick={finishLesson}
+              className="px-12 py-4 bg-emerald-600 text-white rounded-2xl font-black transition-all shadow-xl shadow-emerald-100 hover:-translate-y-1 active:scale-95"
+            >
+              Mark Lesson as Done ✓
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 text-slate-400 rounded-full mb-4">
+              <span className="text-2xl">⏳</span>
+            </div>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-[11px] mb-2">Finish Line</p>
+            <p className="text-slate-500 text-sm mb-6">Complete all {totalCount} topics to finish this lesson.</p>
+            <div className="w-full max-w-[240px] mx-auto h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: `${(doneCount / totalCount) * 100}%` }} />
+            </div>
+          </div>
         )}
       </div>
       
       {/* Finish Line Sensor */}
-      <div ref={endRef} className="h-4 w-full" />
+      <div ref={endRef} className="h-20 w-full" />
     </div>
   );
 }

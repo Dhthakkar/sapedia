@@ -2,11 +2,11 @@
 import { useState } from "react";
 
 const items = [
-  { id:"erp",  label:"Cloud ERP",          sub:"S/4HANA",        color:"#0070F2", r:30,  desc:"Core operations — Finance, Procurement, Manufacturing, Sales." },
-  { id:"btp",  label:"SAP BTP",            sub:"Build & Extend", color:"#7C3AED", r:55,  desc:"Build custom apps and integrations on top of ERP without touching the core." },
-  { id:"data", label:"Business Data Cloud",sub:"Analytics",      color:"#0891B2", r:80, desc:"Data management, analytics, and Business Intelligence across the Suite." },
-  { id:"ai",   label:"Business AI",        sub:"Intelligence",   color:"#059669", r:105, desc:"AI capabilities across all products — Joule, predictive analytics, automation." },
-  { id:"lob",  label:"LoB Solutions",      sub:"HR, CX, Spend",  color:"#D97706", r:130, desc:"SuccessFactors (HR), SAP CX, Ariba (Spend) — specialised apps per business function." },
+  { id:"erp",  label:"Cloud ERP",          sub:"S/4HANA",        color:"#0070F2", r:28,  desc:"Core operations — Finance, Procurement, Manufacturing, Sales." },
+  { id:"btp",  label:"SAP BTP",            sub:"Build & Extend", color:"#7C3AED", r:52,  desc:"Build custom apps and integrations on top of ERP without touching the core." },
+  { id:"data", label:"Business Data Cloud",sub:"Analytics",      color:"#0891B2", r:76, desc:"Data management, analytics, and Business Intelligence across the Suite." },
+  { id:"ai",   label:"Business AI",        sub:"Intelligence",   color:"#059669", r:100, desc:"AI capabilities across all products — Joule, predictive analytics, automation." },
+  { id:"lob",  label:"LoB Solutions",      sub:"HR, CX, Spend",  color:"#D97706", r:124, desc:"SuccessFactors (HR), SAP CX, Ariba (Spend) — specialised apps per business function." },
 ];
 
 const CX = 150, CY = 150;
@@ -17,9 +17,13 @@ export default function EcosystemDiagram() {
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Container with explicit vertical margins */}
-      <div className="w-full max-w-[400px] py-12">
-        <svg viewBox="0 0 300 300" className="w-full h-auto block overflow-visible">
+      {/* 
+          Fixed Height Wrapper: 
+          This ensures the diagram has a reserved space of 320px height. 
+          The description box will ALWAYS start below this 320px mark.
+      */}
+      <div className="w-full max-w-[320px] h-[320px] relative flex items-center justify-center">
+        <svg viewBox="0 0 300 300" className="w-full h-full block overflow-visible drop-shadow-sm">
           {[...items].reverse().map(it => (
             <circle key={it.id} cx={CX} cy={CY} r={it.r}
               fill={`${it.color}${active === it.id ? "18" : "08"}`}
@@ -35,11 +39,11 @@ export default function EcosystemDiagram() {
           
           {items.filter(i => i.id !== "erp").map((it, idx) => {
             const angle = (idx / 4) * Math.PI * 2 - Math.PI / 2 + 0.3;
-            const x = CX + (it.r - 10) * Math.cos(angle);
-            const y = CY + (it.r - 10) * Math.sin(angle);
+            const x = CX + (it.r - 8) * Math.cos(angle);
+            const y = CY + (it.r - 8) * Math.sin(angle);
             return (
               <text key={it.id} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-                fontSize={6.5} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
+                fontSize={6} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
                 style={{ pointerEvents:"none" }}>
                 {it.label}
               </text>
@@ -48,21 +52,24 @@ export default function EcosystemDiagram() {
         </svg>
       </div>
       
-      {/* Description box with top margin to ensure no overlap */}
-      <div className="w-full min-h-[100px] mt-4">
+      {/* Description box — guaranteed to be below the 320px diagram area */}
+      <div className="w-full min-h-[120px] mt-6">
         {activeItem ? (
           <div className="rounded-2xl p-5 border-2 animate-in fade-in slide-in-from-top-2 duration-300" 
             style={{ background:`${activeItem.color}08`, borderColor:`${activeItem.color}25` }}>
-            <p className="text-[13px] font-black mb-1.5 uppercase tracking-wide" style={{ color:activeItem.color }}>
-              {activeItem.label} — {activeItem.sub}
-            </p>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 rounded-full" style={{ background: activeItem.color }} />
+              <p className="text-[13px] font-black uppercase tracking-wide" style={{ color:activeItem.color }}>
+                {activeItem.label} — {activeItem.sub}
+              </p>
+            </div>
             <p className="text-[14px] text-[#334155] leading-relaxed">
               {activeItem.desc}
             </p>
           </div>
         ) : (
-          <div className="text-center py-4 border-2 border-dashed border-slate-100 rounded-2xl">
-            <p className="text-xs font-bold text-[#94A3B8]">Tap a ring to explore each layer</p>
+          <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
+            <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest">Tap a ring to explore the Suite</p>
           </div>
         )}
       </div>
