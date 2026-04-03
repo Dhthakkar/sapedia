@@ -19,30 +19,32 @@ export default function EcosystemDiagram() {
     <div className="w-full flex flex-col gap-8 mt-4">
       <div className="w-full max-w-[480px] mx-auto px-4">
         <svg viewBox="0 0 350 350" className="w-full h-auto block drop-shadow-sm">
-        {[...items].reverse().map(it => (
-          <circle key={it.id} cx={CX} cy={CY} r={it.r}
-            fill={`${it.color}${active === it.id ? "18" : "08"}`}
-            stroke={`${it.color}${active === it.id ? "cc" : "50"}`}
-            strokeWidth={active === it.id ? 2.5 : 1.5}
-            style={{ cursor:"pointer", transition:"all 0.25s" }}
-            onClick={() => setActive(a => a === it.id ? null : it.id)}
-          />
-        ))}
-        <text x={CX} y={CY-6} textAnchor="middle" fontSize={10} fontWeight={800} fill="#0070F2" fontFamily="Sora,sans-serif">Cloud ERP</text>
-        <text x={CX} y={CY+9} textAnchor="middle" fontSize={8}  fontWeight={500} fill="#64748B">S/4HANA</text>
-        {items.filter(i => i.id !== "erp").map((it, idx) => {
-          const angle = (idx / 4) * Math.PI * 2 - Math.PI / 2 + 0.3;
-          const x = CX + (it.r - 12) * Math.cos(angle);
-          const y = CY + (it.r - 12) * Math.sin(angle);
-          return (
-            <text key={it.id} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-              fontSize={7} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
-              style={{ pointerEvents:"none" }}>
-              {it.label}
-            </text>
-          );
-        })}
-      </svg>
+          {[...items].reverse().map(it => (
+            <circle key={it.id} cx={CX} cy={CY} r={it.r}
+              fill={`${it.color}${active === it.id ? "18" : "08"}`}
+              stroke={`${it.color}${active === it.id ? "cc" : "50"}`}
+              strokeWidth={active === it.id ? 2.5 : 1.5}
+              style={{ cursor:"pointer", transition:"all 0.25s" }}
+              onClick={() => setActive(a => a === it.id ? null : it.id)}
+            />
+          ))}
+          <text x={CX} y={CY-6} textAnchor="middle" fontSize={10} fontWeight={800} fill="#0070F2" fontFamily="Sora,sans-serif">Cloud ERP</text>
+          <text x={CX} y={CY+9} textAnchor="middle" fontSize={8}  fontWeight={500} fill="#64748B">S/4HANA</text>
+          {items.filter(i => i.id !== "erp").map((it, idx) => {
+            const angle = (idx / 4) * Math.PI * 2 - Math.PI / 2 + 0.3;
+            const x = CX + (it.r - 12) * Math.cos(angle);
+            const y = CY + (it.r - 12) * Math.sin(angle);
+            return (
+              <text key={it.id} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
+                fontSize={7} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
+                style={{ pointerEvents:"none" }}>
+                {it.label}
+              </text>
+            );
+          })}
+        </svg>
+      </div>
+      
       <div className="min-h-[80px]">
         {activeItem ? (
           <div className="rounded-xl p-3 border-2" style={{ background:`${activeItem.color}10`, borderColor:`${activeItem.color}30` }}>

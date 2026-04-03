@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo, use } from "react";
 import Link from "next/link";
 import COURSE_REGISTRY from "@/data/registry";
 import type { LessonWithUnit } from "@/types";
-import { getCourseProgress, setLessonDone } from "@/lib/progress";
+import { getCourseProgress, setLessonDone, setTopicVisited, getVisitedTopics } from "@/lib/progress";
 import DonationModal from "@/components/ui/DonationModal";
 import PracticeQuestion from "@/components/ui/PracticeQuestion";
 import MockExam from "@/components/ui/MockExam";
@@ -174,6 +174,8 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
   const markVisited = (id: string) => {
     setVisitedTopics(p => {
       if (p[id]) return p;
+      setTopicVisited(courseId, id);
+      window.dispatchEvent(new Event("storage-update"));
       return { ...p, [id]: true };
     });
   };
@@ -256,18 +258,26 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport, onExam }: 
   onExam: () => void;
 }) {
   const [done, setDone] = useState<Record<string, boolean>>({});
+  const [visited, setVisited] = useState<string[]>([]);
+
+  const lessons = useMemo(() => getLessons(), []);
+  const totalTopics = useMemo(() => {
+    return allLessons.reduce((sum, l) => sum + (lessons[l.id]?.topics.length || 0), 0);
+  }, [allLessons, lessons]);
 
   useEffect(() => {
-    setDone(getCourseProgress(course.id));
-    // Re-read progress whenever localStorage changes (triggered by topic completion)
-    const handler = () => setDone(getCourseProgress(course.id));
-    window.addEventListener("storage-update", handler);
-    return () => window.removeEventListener("storage-update", handler);
+    const refresh = () => {
+      setDone(getCourseProgress(course.id));
+      setVisited(getVisitedTopics(course.id));
+    };
+    refresh();
+    window.addEventListener("storage-update", refresh);
+    return () => window.removeEventListener("storage-update", refresh);
   }, [course.id]);
 
-  const total = allLessons.length;
-  const doneN = Object.values(done).filter(Boolean).length;
-  const prog  = total > 0 ? Math.round((doneN / total) * 100) : 0;
+  const totalLessons = allLessons.length;
+  const doneLessons  = Object.values(done).filter(Boolean).length;
+  const prog         = totalTopics > 0 ? Math.round((visited.length / totalTopics) * 100) : 0;
 
   const toggle = (id: string) => {
     const next = !done[id];
@@ -288,7 +298,7 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport, onExam }: 
           <div className="h-full bg-gradient-to-r from-[#0070F2] to-[#38BDF8] rounded-full transition-all duration-500"
             style={{ width: `${prog}%` }} />
         </div>
-        <p className="text-[11px] text-[#94A3B8] mt-1.5">{doneN} of {total} lessons done</p>
+        <p className="text-[11px] text-[#94A3B8] mt-1.5">{doneLessons} of {totalLessons} lessons done</p>
       </div>
 
       {/* Lesson list */}

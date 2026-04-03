@@ -7,6 +7,33 @@
 import type { AllProgress, CourseProgress } from "@/types";
 
 const KEY = "sapedia_progress_v2";
+const VISITED_KEY = "sapedia_visited_v2";
+
+function loadVisited(): Record<string, string[]> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(VISITED_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveVisited(data: Record<string, string[]>): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(VISITED_KEY, JSON.stringify(data));
+}
+
+export function setTopicVisited(courseId: string, topicId: string): void {
+  const all = loadVisited();
+  if (!all[courseId]) all[courseId] = [];
+  if (!all[courseId].includes(topicId)) {
+    all[courseId].push(topicId);
+    saveVisited(all);
+  }
+}
+
+export function getVisitedTopics(courseId: string): string[] {
+  return loadVisited()[courseId] ?? [];
+}
 
 function load(): AllProgress {
   if (typeof window === "undefined") return {};
