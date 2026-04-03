@@ -8,7 +8,7 @@ import {
 import ITPillars from "@/components/visuals/ITPillars";
 import ToolsTable from "@/components/visuals/ToolsTable";
 import CleanStateVisual from "@/components/visuals/CleanStateVisual";
-import SuiteLayers from "@/components/visuals/SuiteLayers";
+import EcosystemDiagram from "@/components/visuals/EcosystemDiagram";
 
 export const u1l1Content = {
   intro: "SAP Business Suite — what it is, why it exists, and how companies get there.",
@@ -42,7 +42,7 @@ export const u1l1Content = {
     {
       id: "u1l1-t2",
       title: "What is the SAP Business Suite",
-      visual: () => <SuiteLayers />,
+      visual: () => <EcosystemDiagram />,
       insight: "The SAP Business Suite is not a single product — it's SAP's entire cloud portfolio working together. S/4HANA sits at the centre handling core operations (finance, procurement, manufacturing). Around it: SAP BTP for building custom extensions, Business Data Cloud for analytics, Business AI for intelligence, and LoB solutions like SuccessFactors (HR) and Ariba (procurement).\n\nThe stated goal: enhance connectivity and optimise functions across enterprises. Click the layers above to explore. A common wrong answer in exams is 'simplify IT infrastructure' — that's a benefit, not the stated goal.",
       questions: [
         {

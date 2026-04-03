@@ -1,9 +1,9 @@
 import React from "react";
 import { 
-  StatsRow, EcosystemDiagram,  
-  Triangle, PhaseTimeline 
+  StatsRow, Triangle, PhaseTimeline 
 } from "@/components/visuals/index";
 import CleanStateVisual from "@/components/visuals/CleanStateVisual";
+import EcosystemDiagram from "@/components/visuals/EcosystemDiagram";
 
 // ─── UNIT 3 LESSON 1 CONTENT ─────────────────────────────
 
