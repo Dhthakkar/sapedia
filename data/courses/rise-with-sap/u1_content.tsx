@@ -31,7 +31,7 @@ export const u1l1Content = {
     {
       id: "u1l1-t2",
       title: "What is the SAP Business Suite",
-      visual: () => <div className="w-full" style={{ maxHeight: 380, overflow: "hidden" }}><EcosystemDiagram /></div>,
+      visual: () => <div className="w-full"><EcosystemDiagram /></div>,
       insight: "The SAP Business Suite is not a single product — it's SAP's entire cloud portfolio working together. S/4HANA sits at the centre handling core operations (finance, procurement, manufacturing). Around it: SAP BTP for building custom extensions, Business Data Cloud for analytics, Business AI for intelligence, and LoB solutions like SuccessFactors (HR) and Ariba (procurement).\n\nThe stated goal: enhance connectivity and optimise functions across enterprises. Tap each ring above to explore. A common wrong answer in exams is 'simplify IT infrastructure' — that's a benefit, not the stated goal.",
       question: {
         q: "What is the main stated goal of the SAP Business Suite?",

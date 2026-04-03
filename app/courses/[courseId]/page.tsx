@@ -245,7 +245,7 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport, onExam }: 
   };
 
   return (
-    <aside className="flex flex-col bg-white border-r border-[#E2E8F0] h-full overflow-hidden">
+    <aside className="flex flex-col bg-white border-r border-[#E2E8F0] h-full overflow-hidden" data-testid="sidebar">
       {/* Progress */}
       <div className="p-4 border-b border-[#E2E8F0] flex-shrink-0">
         <div className="flex justify-between items-center mb-2">
@@ -272,7 +272,8 @@ function Sidebar({ course, allLessons, activeId, onSelect, onSupport, onExam }: 
               const isDone = !!done[lesson.id];
               return (
                 <button key={lesson.id} onClick={() => onSelect(lesson.id)}
-                  className="w-full text-left px-3.5 py-2.5 flex items-start gap-2.5 border-none transition-all border-l-[3px]"
+                  data-testid={`lesson-btn-${lesson.id}`}
+                  className="w-full text-left px-3.5 py-3 min-h-[44px] flex items-start gap-2.5 border-none transition-all border-l-[3px]"
                   style={{ background: isA ? "#EBF4FF" : "transparent", borderLeftColor: isA ? "#0070F2" : "transparent", borderLeftStyle: "solid" }}>
                   <div onClick={e => { e.stopPropagation(); toggle(lesson.id); }}
                     className="w-[17px] h-[17px] rounded flex-shrink-0 flex items-center justify-center mt-0.5 cursor-pointer transition-all"
@@ -406,10 +407,11 @@ export default function CoursePage({ params: paramsPromise }: { params: Promise<
         </div>
 
         {/* Main */}
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 overflow-hidden" data-testid="lesson-content">
           {/* Toolbar */}
           <div className="h-[50px] px-5 flex-shrink-0 bg-white border-b border-[#E2E8F0] flex items-center gap-3">
             <button onClick={() => setSideOpen(o => !o)}
+              data-testid="sidebar-toggle"
               className="flex-shrink-0 bg-transparent hover:bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg px-2.5 py-1.5 text-sm text-[#64748B] transition-colors">
               {sideOpen ? "◀" : "▶"}
             </button>
