@@ -74,12 +74,29 @@ export default function DonationModal({ onClose, trigger = "manual" }: DonationM
               </span>
             </button>
 
-            {/* BMC & PayPal Placeholders */}
+            {/* Buy Me a Coffee */}
+            <a 
+              href={CREATOR_SUPPORT.buymeacoffee}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-4 bg-[#F8FAFC] border-2 border-slate-100 rounded-2xl hover:border-[#FFDD00] hover:bg-[#FFFDF0] transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl">☕</span>
+                <div className="text-left">
+                  <p className="text-sm font-black text-slate-900">Buy Me a Coffee</p>
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Support via BMC</p>
+                </div>
+              </div>
+              <span className="text-[#FFDD00] font-black text-xs group-hover:translate-x-1 transition-transform">Support →</span>
+            </a>
+
+            {/* PayPal Placeholder */}
             <div className="opacity-40 pointer-events-none flex items-center justify-between p-4 bg-[#F8FAFC] border-2 border-slate-100 rounded-2xl">
               <div className="flex items-center gap-3">
                 <span className="text-xl">💳</span>
                 <div className="text-left">
-                  <p className="text-sm font-black text-slate-900">PayPal / BMC</p>
+                  <p className="text-sm font-black text-slate-900">PayPal</p>
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Coming Tomorrow</p>
                 </div>
               </div>
