@@ -102,10 +102,6 @@ export default function DonationModal({ onClose, trigger = "manual" }: DonationM
               </div>
             </div>
           </div>
-
-          <p className="text-center text-[11px] text-slate-400 mt-8 font-bold uppercase tracking-widest">
-            Every bit of support keeps SAPedia free 🙏
-          </p>
         </div>
       </div>
     </div>
