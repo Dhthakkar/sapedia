@@ -25,9 +25,10 @@ const COURSE_REGISTRY: Record<string, Course> = {
       {
         id: "u1", title: "Unit 1: Foundations", color: "#0070F2",
         lessons: [
-          { id: "u1l1", title: "Introducing the SAP Business Suite",      time: 10, hasContent: true },
-          { id: "u1l2", title: "Exploring the RISE with SAP Methodology", time: 12, hasContent: true },
-          { id: "u1l3", title: "Exploring Clean Core Fundamentals",       time: 10, hasContent: true },
+          { id: "u1l1", title: "Introducing the SAP Business Suite", time: 15 },
+          { id: "u1l2", title: "Exploring the RISE with SAP Methodology", time: 20 },
+          { id: "u1l3", title: "Exploring Clean Core Fundamentals", time: 15 },
+
         ],
       },
       {

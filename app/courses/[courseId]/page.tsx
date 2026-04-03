@@ -163,6 +163,7 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
   const lesson = lessons[lessonId];
   const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>({});
   const [visitedTopics, setVisitedTopics]     = useState<Record<string, boolean>>({});
+  const endRef = useRef<HTMLDivElement>(null);
 
   const markDone = useCallback((id: string) => {
     setCompletedTopics(p => {
@@ -175,7 +176,6 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
     setVisitedTopics(p => {
       if (p[id]) return p;
       setTopicVisited(courseId, id);
-      // Defer event to avoid updating Sidebar during LessonView render
       setTimeout(() => {
         window.dispatchEvent(new Event("storage-update"));
       }, 0);
@@ -183,10 +183,24 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
     });
   }, [courseId]);
 
-  const finishLesson = () => {
+  const finishLesson = useCallback(() => {
     setLessonDone(courseId, lessonId, true);
     window.dispatchEvent(new Event("storage-update"));
-  };
+  }, [courseId, lessonId]);
+
+  // Auto-finish when end of page is reached
+  useEffect(() => {
+    const el = endRef.current;
+    if (!el || !lesson) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        const allDone = lesson.topics.every(t => completedTopics[t.id]);
+        if (allDone) finishLesson();
+      }
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [completedTopics, lesson, finishLesson]);
 
   if (!lesson) return (
     <div className="rounded-2xl border border-[#BFDBFE] bg-[#EBF4FF] p-10 text-center">
@@ -245,6 +259,9 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
           </p>
         )}
       </div>
+      
+      {/* Finish Line Sensor */}
+      <div ref={endRef} className="h-4 w-full" />
     </div>
   );
 }

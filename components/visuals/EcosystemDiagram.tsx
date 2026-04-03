@@ -2,23 +2,24 @@
 import { useState } from "react";
 
 const items = [
-  { id:"erp",  label:"Cloud ERP",          sub:"S/4HANA",        color:"#0070F2", r:35,  desc:"Core operations — Finance, Procurement, Manufacturing, Sales." },
-  { id:"btp",  label:"SAP BTP",            sub:"Build & Extend", color:"#7C3AED", r:65,  desc:"Build custom apps and integrations on top of ERP without touching the core." },
-  { id:"data", label:"Business Data Cloud",sub:"Analytics",      color:"#0891B2", r:95, desc:"Data management, analytics, and Business Intelligence across the Suite." },
-  { id:"ai",   label:"Business AI",        sub:"Intelligence",   color:"#059669", r:125, desc:"AI capabilities across all products — Joule, predictive analytics, automation." },
-  { id:"lob",  label:"LoB Solutions",      sub:"HR, CX, Spend",  color:"#D97706", r:155, desc:"SuccessFactors (HR), SAP CX, Ariba (Spend) — specialised apps per business function." },
+  { id:"erp",  label:"Cloud ERP",          sub:"S/4HANA",        color:"#0070F2", r:30,  desc:"Core operations — Finance, Procurement, Manufacturing, Sales." },
+  { id:"btp",  label:"SAP BTP",            sub:"Build & Extend", color:"#7C3AED", r:55,  desc:"Build custom apps and integrations on top of ERP without touching the core." },
+  { id:"data", label:"Business Data Cloud",sub:"Analytics",      color:"#0891B2", r:80, desc:"Data management, analytics, and Business Intelligence across the Suite." },
+  { id:"ai",   label:"Business AI",        sub:"Intelligence",   color:"#059669", r:105, desc:"AI capabilities across all products — Joule, predictive analytics, automation." },
+  { id:"lob",  label:"LoB Solutions",      sub:"HR, CX, Spend",  color:"#D97706", r:130, desc:"SuccessFactors (HR), SAP CX, Ariba (Spend) — specialised apps per business function." },
 ];
 
-const CX = 175, CY = 175;
+const CX = 150, CY = 150;
 
 export default function EcosystemDiagram() {
   const [active, setActive] = useState<string | null>(null);
   const activeItem = items.find(i => i.id === active);
 
   return (
-    <div className="w-full flex flex-col gap-8 mt-4">
-      <div className="w-full max-w-[480px] mx-auto px-4">
-        <svg viewBox="0 0 350 350" className="w-full h-auto block drop-shadow-sm">
+    <div className="w-full flex flex-col items-center">
+      {/* Container with explicit vertical margins */}
+      <div className="w-full max-w-[400px] py-12">
+        <svg viewBox="0 0 300 300" className="w-full h-auto block overflow-visible">
           {[...items].reverse().map(it => (
             <circle key={it.id} cx={CX} cy={CY} r={it.r}
               fill={`${it.color}${active === it.id ? "18" : "08"}`}
@@ -28,15 +29,17 @@ export default function EcosystemDiagram() {
               onClick={() => setActive(a => a === it.id ? null : it.id)}
             />
           ))}
-          <text x={CX} y={CY-6} textAnchor="middle" fontSize={10} fontWeight={800} fill="#0070F2" fontFamily="Sora,sans-serif">Cloud ERP</text>
-          <text x={CX} y={CY+9} textAnchor="middle" fontSize={8}  fontWeight={500} fill="#64748B">S/4HANA</text>
+          
+          <text x={CX} y={CY-5} textAnchor="middle" fontSize={9} fontWeight={800} fill="#0070F2" fontFamily="Sora,sans-serif">Cloud ERP</text>
+          <text x={CX} y={CY+8} textAnchor="middle" fontSize={7}  fontWeight={500} fill="#64748B">S/4HANA</text>
+          
           {items.filter(i => i.id !== "erp").map((it, idx) => {
             const angle = (idx / 4) * Math.PI * 2 - Math.PI / 2 + 0.3;
-            const x = CX + (it.r - 12) * Math.cos(angle);
-            const y = CY + (it.r - 12) * Math.sin(angle);
+            const x = CX + (it.r - 10) * Math.cos(angle);
+            const y = CY + (it.r - 10) * Math.sin(angle);
             return (
               <text key={it.id} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-                fontSize={7} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
+                fontSize={6.5} fontWeight={700} fill={it.color} fontFamily="Sora,sans-serif"
                 style={{ pointerEvents:"none" }}>
                 {it.label}
               </text>
@@ -45,14 +48,22 @@ export default function EcosystemDiagram() {
         </svg>
       </div>
       
-      <div className="min-h-[80px]">
+      {/* Description box with top margin to ensure no overlap */}
+      <div className="w-full min-h-[100px] mt-4">
         {activeItem ? (
-          <div className="rounded-xl p-3 border-2" style={{ background:`${activeItem.color}10`, borderColor:`${activeItem.color}30` }}>
-            <p className="text-sm font-black mb-1" style={{ color:activeItem.color }}>{activeItem.label} — {activeItem.sub}</p>
-            <p className="text-sm text-[#334155] leading-relaxed">{activeItem.desc}</p>
+          <div className="rounded-2xl p-5 border-2 animate-in fade-in slide-in-from-top-2 duration-300" 
+            style={{ background:`${activeItem.color}08`, borderColor:`${activeItem.color}25` }}>
+            <p className="text-[13px] font-black mb-1.5 uppercase tracking-wide" style={{ color:activeItem.color }}>
+              {activeItem.label} — {activeItem.sub}
+            </p>
+            <p className="text-[14px] text-[#334155] leading-relaxed">
+              {activeItem.desc}
+            </p>
           </div>
         ) : (
-          <p className="text-xs text-[#94A3B8] text-center pt-2">Tap a ring to explore each layer →</p>
+          <div className="text-center py-4 border-2 border-dashed border-slate-100 rounded-2xl">
+            <p className="text-xs font-bold text-[#94A3B8]">Tap a ring to explore each layer</p>
+          </div>
         )}
       </div>
     </div>
