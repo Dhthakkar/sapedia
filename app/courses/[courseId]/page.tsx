@@ -75,17 +75,12 @@ function TopicCard({ topic, num, isComplete, onComplete }: {
   const [answered, setAnswered] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Auto-complete when user scrolls past this topic
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || isComplete) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (!entry.isIntersecting) onComplete(); },
-      { threshold: 0, rootMargin: "0px 0px -80% 0px" }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [isComplete, onComplete]);
+  const handleAnswer = (idx: number) => {
+    setAnswered(idx);
+    if (idx === topic.question.correct) {
+      onComplete();
+    }
+  };
 
   const correct = answered === topic.question.correct;
 
@@ -130,7 +125,7 @@ function TopicCard({ topic, num, isComplete, onComplete }: {
               bg = "#EBF4FF"; border = "#0070F2"; color = "#0057C2";
             }
             return (
-              <button key={i} onClick={() => { if (answered === null) { setAnswered(i); onComplete(); } }}
+              <button key={i} onClick={() => { if (answered === null) { setAnswered(i); if (i === topic.question.correct) onComplete(); } }}
                 className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all"
                 style={{ background: bg, border: `1.5px solid ${border}`, color, cursor: answered !== null ? "default" : "pointer" }}>
                 {opt}
@@ -163,15 +158,10 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
     });
   };
 
-  // When all topics done, mark lesson as done in progress
-  useEffect(() => {
-    if (!lesson) return;
-    const allDone = lesson.topics.every(t => completedTopics[t.id]);
-    if (allDone) {
-      setLessonDone(courseId, lessonId, true);
-      window.dispatchEvent(new Event("storage-update"));
-    }
-  }, [completedTopics, lesson, courseId, lessonId]);
+  const finishLesson = () => {
+    setLessonDone(courseId, lessonId, true);
+    window.dispatchEvent(new Event("storage-update"));
+  };
 
   if (!lesson) return (
     <div className="rounded-2xl border border-[#BFDBFE] bg-[#EBF4FF] p-10 text-center">
@@ -208,6 +198,26 @@ function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string
           onComplete={() => markDone(topic.id)}
         />
       ))}
+
+      {/* Finish Lesson Button */}
+      <div className="mt-12 pt-8 border-t border-[#E2E8F0] text-center">
+        <button
+          onClick={finishLesson}
+          disabled={doneCount < totalCount}
+          className={`px-10 py-4 rounded-2xl font-black transition-all shadow-xl ${
+            doneCount < totalCount
+              ? "bg-[#F1F5F9] text-[#94A3B8] cursor-not-allowed"
+              : "bg-[#0070F2] text-white hover:-translate-y-1 shadow-blue-200"
+          }`}
+        >
+          {doneCount < totalCount ? `Complete all ${totalCount} topics to finish` : "Finish Lesson ✓"}
+        </button>
+        {doneCount >= totalCount && (
+          <p className="mt-4 text-xs font-bold text-[#059669] animate-bounce">
+            Great work! You've mastered this lesson.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
