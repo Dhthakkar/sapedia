@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════
 import type { AllProgress, CourseProgress } from "@/types";
 
-const KEY = "sapedia_progress";
+const KEY = "sapedia_progress_v2";
 
 function load(): AllProgress {
   if (typeof window === "undefined") return {};
