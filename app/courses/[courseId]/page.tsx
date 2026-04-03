@@ -95,7 +95,7 @@ function TopicCard({ topic, num, isComplete, onComplete }: {
       </div>
 
       {/* Visual — full width, clean */}
-      <div className="mb-5 w-full" style={{ maxWidth: "100%", overflow: "hidden" }}>
+      <div className="mb-8 w-full">
         {topic.visual()}
       </div>
 
