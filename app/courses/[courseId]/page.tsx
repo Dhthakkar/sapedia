@@ -31,19 +31,21 @@ import { u1l3Questions } from "@/data/courses/rise-with-sap/questions/u1l3";
 // insight: 2-3 lines max — plain language, exam tip woven in
 // question: one checkpoint question, always visible
 // ─────────────────────────────────────────────────────────────
+interface TopicQuestion {
+  q: string;
+  type?: string;
+  count?: number;
+  options: string[];
+  correct: number[];
+  why: string;
+}
+
 interface Topic {
   id: string;
   title: string;
   visual: () => React.ReactNode;
   insight: string;
-  question: {
-    q: string;
-    type?: string; // Relaxed for inferred string types
-    count?: number;
-    options: string[];
-    correct: number[];
-    why: string;
-  };
+  questions: TopicQuestion[]; // Multiple variants allowed
 }
 
 interface LessonData {
@@ -78,11 +80,15 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
   const [submitted, setSubmitted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const isMulti = topic.question.type === "multi";
-  const requiredCount = isMulti ? (topic.question.count || 1) : 1;
-  const correctAnswers = Array.isArray(topic.question.correct) 
-    ? topic.question.correct 
-    : [topic.question.correct];
+  // Select one random question from the pool on mount
+  const question = useMemo(() => {
+    const idx = Math.floor(Math.random() * topic.questions.length);
+    return topic.questions[idx];
+  }, [topic.questions]);
+
+  const isMulti = question.type === "multi";
+  const requiredCount = isMulti ? (question.count || 1) : 1;
+  const correctAnswers = question.correct;
 
   // Mark as visited when enters viewport
   useEffect(() => {
@@ -163,8 +169,8 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
         </div>
         
         <div className="p-5 flex flex-col gap-3">
-          <p className="text-[15px] font-bold text-[#0F172A] mb-2">{topic.question.q}</p>
-          {topic.question.options.map((opt, i) => {
+          <p className="text-[15px] font-bold text-[#0F172A] mb-2">{question.q}</p>
+          {question.options.map((opt, i) => {
             const isSelected = selected.includes(i);
             const isCorrectOption = correctAnswers.includes(i);
             
@@ -200,7 +206,7 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
           <div className={`px-5 py-4 border-t text-[13px] leading-relaxed font-medium ${isCorrect ? "bg-emerald-50 text-emerald-800 border-emerald-100" : "bg-red-50 text-red-800 border-red-100"}`}>
             <div className="flex gap-2">
               <span className="text-lg leading-none">{isCorrect ? "✅" : "❌"}</span>
-              <p>{topic.question.why}</p>
+              <p>{question.why}</p>
             </div>
           </div>
         )}
@@ -214,14 +220,7 @@ function TopicCard({ topic, num, isComplete, onComplete, onVisit }: {
 // ─────────────────────────────────────────────────────────────
 function LessonView({ lessonId, courseId }: { lessonId: string; courseId: string }) {
   const lessons = useMemo(() => getLessons(), []);
-  const rawLesson = lessons[lessonId];
-  
-  // Randomize topics on load
-  const lesson = useMemo(() => {
-    if (!rawLesson) return null;
-    const shuffled = [...rawLesson.topics].sort(() => Math.random() - 0.5);
-    return { ...rawLesson, topics: shuffled };
-  }, [rawLesson]);
+  const lesson = lessons[lessonId];
 
   const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>({});
   const [visitedTopics, setVisitedTopics]     = useState<Record<string, boolean>>({});
